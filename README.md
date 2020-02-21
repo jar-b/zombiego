@@ -2,8 +2,6 @@
 
 A simple scrolling text game, which may or may not have characters inspired by a popular TV show. Mostly just an excuse to use Go.
 
-![zombiego.png](img/zombiego.png)
-
 ## Other Ideas
 
 * Add levels
