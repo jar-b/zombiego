@@ -3,6 +3,7 @@ package main
 import (
 	"bufio"
 	"fmt"
+	"github.com/fatih/color"
 	"math/rand"
 	"os"
 	"strconv"
@@ -25,6 +26,12 @@ type (
 )
 
 var (
+	// Re-usable colorized output
+	blue   = color.New(color.FgBlue).Add(color.Bold)
+	red    = color.New(color.FgRed)
+	green  = color.New(color.FgGreen)
+	yellow = color.New(color.FgYellow)
+
 	// Seed that changes to produce truly random numbers each iteration
 	seed = rand.NewSource(time.Now().UnixNano())
 	// A random number generator for determining attack success
@@ -93,7 +100,7 @@ func (c *Character) isAlive() bool {
 
 // Displays the characters attributes, including Hp and attacks
 func (c *Character) Display() {
-	fmt.Printf("[%s] %s (%d HP)\n  Attacks:\n", c.Alias, c.Name, c.Hp)
+	yellow.Printf("[%s] %s (%d HP)\n  Attacks:\n", c.Alias, c.Name, c.Hp)
 	c.DisplayAttacks()
 	fmt.Println()
 }
@@ -102,7 +109,7 @@ func (c *Character) Display() {
 func (c *Character) DisplayAttacks() {
 	for i := 0; i < len(c.Attacks); i++ {
 		a := c.Attacks[i]
-		fmt.Printf("  [%d] %s\t(%d Damage, %d Accuracy)\n", i, a.Name, a.Damage, a.Accuracy)
+		yellow.Printf("  [%d] %s\t(%d Damage, %d Accuracy)\n", i, a.Name, a.Damage, a.Accuracy)
 	}
 }
 
@@ -140,7 +147,7 @@ func chooseCharacter() (player Character) {
 		}
 
 		if player.Name != "" {
-			fmt.Printf("%s chosen!\n\n", player.Name)
+			blue.Printf("%s chosen!\n\n", player.Name)
 			break
 		}
 	}
@@ -191,7 +198,7 @@ func fightLoop(player Character, zombie Character) bool {
 		if za.wasSuccessful() {
 			zd = za.Damage
 			player.Hp = (player.Hp - zd)
-			fmt.Printf("%s successful for %d damage! (%s: %d HP remaining)\n", za.Name, zd, player.Name, player.Hp)
+			red.Printf("%s successful for %d damage! (%s: %d HP remaining)\n", za.Name, zd, player.Name, player.Hp)
 		} else {
 			fmt.Printf("%s missed!\n", za.Name)
 		}
@@ -209,21 +216,21 @@ func fightLoop(player Character, zombie Character) bool {
 		if pa.wasSuccessful() {
 			pd = pa.Damage
 			zombie.Hp = (zombie.Hp - pd)
-			fmt.Printf("%s successful for %d damage! (%s: %d HP remaining)\n", pa.Name, pd, zombie.Name, zombie.Hp)
+			green.Printf("%s successful for %d damage! (%s: %d HP remaining)\n", pa.Name, pd, zombie.Name, zombie.Hp)
 		} else {
 			fmt.Printf("%s missed!\n", pa.Name)
 		}
 		time.Sleep(1000 * time.Millisecond)
 
 	}
-	fmt.Printf("Zombie %s defeated!\n\n", zombie.Name)
+	green.Printf("Zombie %s defeated!\n\n", zombie.Name)
 	time.Sleep(1000 * time.Millisecond)
 
 	return true
 }
 
 func main() {
-	fmt.Printf("zombiego\n--------\n\n")
+	blue.Printf("zombiego\n--------\n\n")
 	player := chooseCharacter()
 	time.Sleep(1000 * time.Millisecond)
 
@@ -231,12 +238,12 @@ func main() {
 		zombie := Zombies[i]
 		survived := fightLoop(player, zombie)
 		if !survived {
-			fmt.Printf("You didn't make it :/\n")
+			red.Printf("You didn't make it :/\n")
 			break
 		}
 
 		if survived && i == (len(Zombies)-1) {
-			fmt.Printf("You made it!\n")
+			green.Printf("You made it!\n")
 		}
 
 	}
