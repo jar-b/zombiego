@@ -1,0 +1,18 @@
+[
+    {
+        "name":  "Shane",
+        "alias": "s",
+        "hp":    10,
+        "attacks": [
+            {"name": "Bite", "accuracy": 50, "damage": 10}
+        ]
+    },
+    {
+        "name":  "Glenn",
+        "alias": "g",
+        "hp":    20,
+        "attacks": [
+            {"name": "Bite", "accuracy": 40, "damage": 20}
+        ]
+    }
+]

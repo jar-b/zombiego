@@ -1,0 +1,29 @@
+[
+    {
+        "name":  "Rick",
+        "alias": "r",
+        "hp":    100,
+        "attacks": [
+            {"name": "Punch", "accuracy": 50, "damage": 15},
+            {"name": "Revolver", "accuracy": 20, "damage": 60}
+        ]
+    },
+    {
+        "name":  "Daryl",
+        "alias": "d",
+        "hp":    100,
+        "attacks": [
+            {"name": "Punch", "accuracy": 50, "damage": 15},
+            {"name": "Crossbow", "accuracy": 25, "damage": 50}
+        ]
+    },
+    {
+        "name":  "Carl",
+        "alias": "c",
+        "hp":    50,
+        "attacks": [
+            {"name": "Punch", "accuracy": 40, "damage": 10},
+            {"name": "Cower", "accuracy": 100, "damage": 5}
+        ]
+    }
+]

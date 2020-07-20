@@ -1,83 +1,51 @@
 package main
 
 import (
+	"encoding/json"
 	"fmt"
+	"io/ioutil"
+	"log"
 	"math/rand"
 	"time"
 )
 
-type (
-	Character struct {
-		Name    string
-		Alias   string
-		Hp      int
-		Attacks []Attack
+// Character contains attributes about an individual (human or zombie)
+type Character struct {
+	Name    string   `json:"name"`
+	Alias   string   `json:"alias"`
+	Hp      int      `json:"hp"`
+	Attacks []Attack `json:"attacks"`
+}
+
+// Attack contains attributes for a single attack
+type Attack struct {
+	Name     string `json:"name"`
+	Accuracy int    `json:"accuracy"`
+	Damage   int    `json:"damage"`
+}
+
+// Seed that changes to produce truly random numbers each iteration
+var seed = rand.NewSource(time.Now().UnixNano())
+
+// A random number generator for determining attack success
+var randgen = rand.New(seed)
+
+// Reads a list of characters from the specified JSON file
+func charactersFromFile(file string) []Character {
+	content, err := ioutil.ReadFile(file)
+	if err != nil {
+		log.Fatalf("Error reading file %s", file)
+
 	}
 
-	Attack struct {
-		Name     string
-		Accuracy int
-		Damage   int
-	}
-)
-
-var (
-	// Player character options
-	Humans = []Character{
-		{
-			Name:  "Rick",
-			Alias: "r",
-			Hp:    100,
-			Attacks: []Attack{
-				{Name: "Punch", Accuracy: 50, Damage: 15},
-				{Name: "Revolver", Accuracy: 20, Damage: 60},
-			},
-		},
-		{
-			Name:  "Daryl",
-			Alias: "d",
-			Hp:    100,
-			Attacks: []Attack{
-				{Name: "Punch", Accuracy: 50, Damage: 15},
-				{Name: "Crossbow", Accuracy: 25, Damage: 50},
-			},
-		},
-		{
-			Name:  "Carl",
-			Alias: "c",
-			Hp:    50,
-			Attacks: []Attack{
-				{Name: "Punch", Accuracy: 40, Damage: 10},
-				{Name: "Cower", Accuracy: 100, Damage: 5},
-			},
-		},
+	var characters []Character
+	err = json.Unmarshal(content, &characters)
+	if err != nil {
+		log.Fatalf("Error unmarshalling file %s", file)
 	}
 
-	// Zombie opponents
-	Zombies = []Character{
-		{
-			Name:  "Shane",
-			Alias: "s",
-			Hp:    10,
-			Attacks: []Attack{
-				{Name: "Bite", Accuracy: 50, Damage: 10},
-			},
-		},
-		{
-			Name:  "Glenn",
-			Alias: "g",
-			Hp:    20,
-			Attacks: []Attack{
-				{Name: "Bite", Accuracy: 40, Damage: 20},
-			},
-		},
-	}
-
-	// Seed that changes to produce truly random numbers each iteration
-	seed = rand.NewSource(time.Now().UnixNano())
-	// A random number generator for determining attack success
-	randgen = rand.New(seed)
-)
+	return characters
+}
 
 // Verifies if the character is alive, based on remaining Hp
 func (c *Character) isAlive() bool {

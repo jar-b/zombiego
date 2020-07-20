@@ -9,11 +9,11 @@ import (
 )
 
 // Prompts for character choice to start the game
-func chooseCharacter() (player Character) {
+func chooseCharacter(humans []Character) (player Character) {
 	fmt.Printf("Choose your character:\n")
 
-	for i := 0; i < len(Humans); i++ {
-		Humans[i].Display()
+	for i := 0; i < len(humans); i++ {
+		humans[i].Display()
 	}
 
 	fmt.Print("--> ")
@@ -21,11 +21,11 @@ func chooseCharacter() (player Character) {
 	for scanner.Scan() {
 		switch input := scanner.Text(); input {
 		case "r":
-			player = Humans[0]
+			player = humans[0]
 		case "d":
-			player = Humans[1]
+			player = humans[1]
 		case "c":
-			player = Humans[2]
+			player = humans[2]
 		default:
 			fmt.Printf("Invalid option. Choose again.\n--> ")
 		}
