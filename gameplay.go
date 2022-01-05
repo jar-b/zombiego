@@ -8,39 +8,37 @@ import (
 	"time"
 )
 
-// Prompts for character choice to start the game
+// chooseCharacter prompts for a character choice to start the game
 func chooseCharacter(humans []Character) (player Character) {
 	fmt.Printf("Choose your character:\n")
 
-	for i := 0; i < len(humans); i++ {
-		humans[i].Display()
+	for _, human := range humans {
+		human.Display()
 	}
 
 	fmt.Print("--> ")
 	scanner := bufio.NewScanner(os.Stdin)
 	for scanner.Scan() {
-		switch input := scanner.Text(); input {
-		case "r":
-			player = humans[0]
-		case "d":
-			player = humans[1]
-		case "c":
-			player = humans[2]
-		default:
-			fmt.Printf("Invalid option. Choose again.\n--> ")
+		input := scanner.Text()
+
+		for _, h := range humans {
+			if input == h.Alias {
+				player = h
+			}
 		}
 
 		if player.Name != "" {
 			blue.Printf("%s chosen!\n\n", player.Name)
 			break
 		}
+		fmt.Printf("Invalid option. Choose again.\n--> ")
 	}
 
 	return player
 }
 
-// Prompts for a characters attack choice
-func chooseAttack(player Character) (attack Attack) {
+// chooseAttach prompts for a characters attack choice
+func (player *Character) chooseAttack() (attack Attack) {
 	fmt.Printf("Choose your attack:\n")
 	player.DisplayAttacks()
 
@@ -49,66 +47,66 @@ func chooseAttack(player Character) (attack Attack) {
 	for scanner.Scan() {
 		input := scanner.Text()
 
-		for i := 0; i < len(player.Attacks); i++ {
+		for i, a := range player.Attacks {
 			if input == strconv.Itoa(i) {
-				attack = player.Attacks[i]
+				attack = a
 			}
 		}
 
 		if attack.Name != "" {
 			break
-		} else {
-			fmt.Printf("Invalid option. Choose again.\n--> ")
 		}
+		fmt.Printf("Invalid option. Choose again.\n--> ")
 	}
 
 	return attack
 }
 
-// Handles the fight sequence when the player encounters
-// a zombie
-func fightLoop(player Character, zombie Character) bool {
+// Fight handles the fight sequence when the player encounters a zombie
+func (player *Character) Fight(zombie Character) bool {
 	fmt.Printf("Zombie spotted!\n")
 	zombie.Display()
 
 	for zombie.isAlive() {
 		// zombie attack
-		var zd int
-		za := zombie.Attacks[0] // only one attack, for now
-
 		fmt.Printf("Zombie is attacking...\n")
-		time.Sleep(1000 * time.Millisecond)
+		pauseScreen()
 
+		za := zombie.Attacks[0] // only one attack, for now
 		if za.wasSuccessful() {
-			zd = za.Damage
-			player.Hp = (player.Hp - zd)
-			red.Printf("%s successful for %d damage! (%s: %d HP remaining)\n", za.Name, zd, player.Name, player.Hp)
+			player.Hp = (player.Hp - za.Damage)
+			red.Printf("%s successful for %d damage! (%s: %d HP remaining)\n", za.Name, za.Damage, player.Name, player.Hp)
 		} else {
 			fmt.Printf("%s missed!\n", za.Name)
 		}
-		time.Sleep(1000 * time.Millisecond)
+		pauseScreen()
 
 		if !player.isAlive() {
 			return false
 		}
 
 		// player attack
-		var pd int
-		pa := chooseAttack(player)
-		time.Sleep(1000 * time.Millisecond)
+		pa := player.chooseAttack()
+		pauseScreen()
 
 		if pa.wasSuccessful() {
-			pd = pa.Damage
-			zombie.Hp = (zombie.Hp - pd)
-			green.Printf("%s successful for %d damage! (%s: %d HP remaining)\n", pa.Name, pd, zombie.Name, zombie.Hp)
+			zombie.Hp = (zombie.Hp - pa.Damage)
+			green.Printf("%s successful for %d damage! (%s: %d HP remaining)\n", pa.Name, pa.Damage, zombie.Name, zombie.Hp)
 		} else {
 			fmt.Printf("%s missed!\n", pa.Name)
 		}
-		time.Sleep(1000 * time.Millisecond)
+		pauseScreen()
 
 	}
+
 	green.Printf("Zombie %s defeated!\n\n", zombie.Name)
-	time.Sleep(1000 * time.Millisecond)
+	pauseScreen()
 
 	return true
+}
+
+// pauseScreen is a helper to sleep for a configured amount of time to
+// make the scrolling text easier to follow
+func pauseScreen() {
+	time.Sleep(pauseDuration)
 }

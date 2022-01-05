@@ -1,9 +1,19 @@
 package main
 
 import (
+	"os"
 	"time"
 
 	"github.com/fatih/color"
+)
+
+const (
+	// character data files
+	humanFile  = "data/humans.json"
+	zombieFile = "data/zombies.json"
+
+	// pauseDuration is the amount of time the screen will pause between actions
+	pauseDuration = 1000 * time.Millisecond
 )
 
 var (
@@ -12,10 +22,6 @@ var (
 	red    = color.New(color.FgRed)
 	green  = color.New(color.FgGreen)
 	yellow = color.New(color.FgYellow)
-
-	// character data files
-	humanFile  = "data/humans.json"
-	zombieFile = "data/zombies.json"
 )
 
 func main() {
@@ -24,19 +30,15 @@ func main() {
 
 	blue.Printf("zombiego\n--------\n\n")
 	player := chooseCharacter(humans)
-	time.Sleep(1000 * time.Millisecond)
+	pauseScreen()
 
-	for i := 0; i < len(zombies); i++ {
-		zombie := zombies[i]
-		survived := fightLoop(player, zombie)
+	for _, zombie := range zombies {
+		survived := player.Fight(zombie)
 		if !survived {
-			red.Printf("You didn't make it :/\n")
-			break
+			red.Println("You didn't make it :/")
+			os.Exit(0)
 		}
-
-		if survived && i == (len(zombies)-1) {
-			green.Printf("You made it!\n")
-		}
-
 	}
+
+	green.Println("You made it!")
 }

@@ -24,13 +24,13 @@ type Attack struct {
 	Damage   int    `json:"damage"`
 }
 
-// Seed that changes to produce truly random numbers each iteration
+// seed is a seed that changes to produce truly random numbers each iteration
 var seed = rand.NewSource(time.Now().UnixNano())
 
-// A random number generator for determining attack success
+// randgen is a random number generator for determining attack success
 var randgen = rand.New(seed)
 
-// Reads a list of characters from the specified JSON file
+// charactersFromFile reads a list of characters from the specified JSON file
 func charactersFromFile(file string) []Character {
 	content, err := ioutil.ReadFile(file)
 	if err != nil {
@@ -47,35 +47,27 @@ func charactersFromFile(file string) []Character {
 	return characters
 }
 
-// Verifies if the character is alive, based on remaining Hp
+// isAlive verifies if the character is alive based on remaining Hp
 func (c *Character) isAlive() bool {
-	if c.Hp > 0 {
-		return true
-	}
-	return false
+	return c.Hp > 0
 }
 
-// Displays the characters attributes, including Hp and attacks
+// Displays prints the character's attributes, including Hp and attacks
 func (c *Character) Display() {
 	yellow.Printf("[%s] %s (%d HP)\n  Attacks:\n", c.Alias, c.Name, c.Hp)
 	c.DisplayAttacks()
 	fmt.Println()
 }
 
-// Displays the characters attacks options
+// DisplayAttacks prints the character's attacks options
 func (c *Character) DisplayAttacks() {
-	for i := 0; i < len(c.Attacks); i++ {
-		a := c.Attacks[i]
+	for i, a := range c.Attacks {
 		yellow.Printf("  [%d] %s\t(%d Damage, %d Accuracy)\n", i, a.Name, a.Damage, a.Accuracy)
 	}
 }
 
-// Determines if an attack is successful by generating a random
-// number (0-100) and comparing with the Accuracy attribute for the
-// chosen attack
+// wasSuccessful determines if an attack is successful by generating a random
+// number (0-100) and comparing with the Accuracy attribute for the chosen attack
 func (a *Attack) wasSuccessful() bool {
-	if randgen.Intn(100) <= a.Accuracy {
-		return true
-	}
-	return false
+	return randgen.Intn(100) <= a.Accuracy
 }
