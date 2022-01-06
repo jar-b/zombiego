@@ -6,6 +6,7 @@ import (
 	"io/ioutil"
 	"log"
 	"math/rand"
+	"strings"
 	"time"
 )
 
@@ -24,11 +25,13 @@ type Attack struct {
 	Damage   int    `json:"damage"`
 }
 
-// seed is a seed that changes to produce truly random numbers each iteration
-var seed = rand.NewSource(time.Now().UnixNano())
+var (
+	// seed is a seed that changes to produce truly random numbers each iteration
+	seed = rand.NewSource(time.Now().UnixNano())
 
-// randgen is a random number generator for determining attack success
-var randgen = rand.New(seed)
+	// randgen is a random number generator for determining attack success
+	randgen = rand.New(seed)
+)
 
 // charactersFromFile reads a list of characters from the specified JSON file
 func charactersFromFile(file string) []Character {
@@ -47,23 +50,25 @@ func charactersFromFile(file string) []Character {
 	return characters
 }
 
-// isAlive verifies if the character is alive based on remaining Hp
-func (c *Character) isAlive() bool {
-	return c.Hp > 0
-}
-
 // Displays prints the character's attributes, including Hp and attacks
-func (c *Character) Display() {
-	yellow.Printf("[%s] %s (%d HP)\n  Attacks:\n", c.Alias, c.Name, c.Hp)
-	c.DisplayAttacks()
-	fmt.Println()
+func (c *Character) Display() string {
+	var b strings.Builder
+	b.WriteString(fmt.Sprintf("[%s] %s (%d HP)\n  Attacks:\n%s\n", c.Alias, c.Name, c.Hp, c.DisplayAttacks()))
+	return b.String()
 }
 
 // DisplayAttacks prints the character's attacks options
-func (c *Character) DisplayAttacks() {
+func (c *Character) DisplayAttacks() string {
+	var b strings.Builder
 	for i, a := range c.Attacks {
-		yellow.Printf("  [%d] %s\t(%d Damage, %d Accuracy)\n", i, a.Name, a.Damage, a.Accuracy)
+		b.WriteString(fmt.Sprintf("  [%d] %s\t(%d Damage, %d Accuracy)\n", i, a.Name, a.Damage, a.Accuracy))
 	}
+	return b.String()
+}
+
+// isAlive verifies if the character is alive based on remaining Hp
+func (c *Character) isAlive() bool {
+	return c.Hp > 0
 }
 
 // wasSuccessful determines if an attack is successful by generating a random

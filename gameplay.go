@@ -10,10 +10,10 @@ import (
 
 // chooseCharacter prompts for a character choice to start the game
 func chooseCharacter(humans []Character) (player Character) {
-	fmt.Printf("Choose your character:\n")
+	fmt.Println("Choose your character:")
 
 	for _, human := range humans {
-		human.Display()
+		yellow.Print(human.Display())
 	}
 
 	fmt.Print("--> ")
@@ -39,8 +39,8 @@ func chooseCharacter(humans []Character) (player Character) {
 
 // chooseAttach prompts for a characters attack choice
 func (player *Character) chooseAttack() (attack Attack) {
-	fmt.Printf("Choose your attack:\n")
-	player.DisplayAttacks()
+	fmt.Println("Choose your attack:")
+	yellow.Print(player.DisplayAttacks())
 
 	fmt.Print("--> ")
 	scanner := bufio.NewScanner(os.Stdin)
@@ -64,12 +64,12 @@ func (player *Character) chooseAttack() (attack Attack) {
 
 // Fight handles the fight sequence when the player encounters a zombie
 func (player *Character) Fight(zombie Character) bool {
-	fmt.Printf("Zombie spotted!\n")
-	zombie.Display()
+	fmt.Println("Zombie spotted!")
+	yellow.Print(zombie.Display())
 
 	for zombie.isAlive() {
 		// zombie attack
-		fmt.Printf("Zombie is attacking...\n")
+		fmt.Println("Zombie is attacking...")
 		pauseScreen()
 
 		za := zombie.Attacks[0] // only one attack, for now
